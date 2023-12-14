@@ -1,4 +1,4 @@
-#include "kernel/types.h"
+/*#include "kernel/types.h"
 #include "user/user.h"
 #include "kernel/defs.h"
 int main(int argc, char *argv[]){
@@ -15,4 +15,4 @@ int main(int argc, char *argv[]){
 		sleep(1000);
 	}
 	exit(0);
-}
+}*/

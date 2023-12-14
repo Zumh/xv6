@@ -193,10 +193,16 @@ UPROGS=\
 	$U/_primes\
 	$U/_find\
 	$U/_xargs\
-	$U/_uptime\
-	$U/_ex1.c\
-	$U/_ex2.c\
-
+	$U/_ex1\
+	$U/_ex2\
+	$U/_ex3\
+	$U/_ex4\
+	$U/_ex5\
+	$U/_ex6\
+	$U/_ex7\
+	$U/_ex8\
+	$U/_ex9\
+	#$U/_uptime\
 
 ifeq ($(LAB),$(filter $(LAB), lock))
 UPROGS += \
