@@ -1,0 +1,68 @@
+#include "kernel/types.h"
+#include "kernel/stat.h"
+#include "user/user.h"
+#include "kernel/param.h"  // MAXARG
+
+#define BUFFER_SIZE 2048
+#define MAX_ARGS MAXARG
+
+int is_blank(char chr) {
+    return (chr == ' ' || chr == '\t');
+}
+
+void execute_command(char *args[], int num_args) {
+    if (!fork()) {
+        exit(exec(args[0], args));
+    }
+    wait(0);
+}
+
+void add_argument(char *args[], char *arg, int *arg_counter, char **input_ptr, char *input_buffer, int *buffer_offset) {
+    args[(*arg_counter)++] = *input_ptr;
+    *input_ptr = input_buffer + (*buffer_offset);
+    *arg = 0;
+}
+
+void parse_input_and_execute_command(int argc, char *argv[]) {
+    char input_buffer[BUFFER_SIZE], current_char;
+    char *input_ptr = input_buffer;
+    char *command_args[MAX_ARGS];
+    int args_counter = 0;
+    int blanks_count = 0;
+    int buffer_offset = 0;
+
+    if (argc <= 1) {
+        fprintf(2, "usage: xargs <command> [argv...]\n");
+        exit(1);
+    }
+
+    for (args_counter = 1; args_counter < argc; args_counter++) {
+        command_args[args_counter - 1] = argv[args_counter];
+    }
+    args_counter--;
+
+    while (read(0, &current_char, 1) > 0) {
+        if (is_blank(current_char)) {
+            blanks_count++;
+            continue;
+        }
+
+        if (blanks_count) {  // There were previous blanks
+            add_argument(command_args, &current_char, &args_counter, &input_ptr, input_buffer, &buffer_offset);
+            blanks_count = 0;
+        }
+
+        if (current_char != '\n') {
+            input_buffer[buffer_offset++] = current_char;
+        } else {
+            add_argument(command_args, &current_char, &args_counter, &input_ptr, input_buffer, &buffer_offset);
+            execute_command(command_args, argc - 1);
+            args_counter = argc - 1;
+        }
+    }
+}
+
+int main(int argc, char *argv[]) {
+    parse_input_and_execute_command(argc, argv);
+    exit(0);
+}

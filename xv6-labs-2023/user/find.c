@@ -58,13 +58,14 @@ void find( char* path, char *fname){
        memmove(p, de.name, DIRSIZ);
        p[DIRSIZ] = 0;
        if(stat(buf, &st) < 0){
-         printf("ls: cannot stat %s\n", buf);
+         printf("find: cannot stat %s\n", buf);
          continue;
        }
        if (st.type == T_DIR && strcmp(de.name, ".") != 0 && strcmp(de.name, "..") != 0){
           find(buf, fname);
         } else if (st.type == T_FILE && strcmp(de.name, fname) == 0){
-          printf("%s\n", buf);
+	  buf[strlen(buf)] = '\n';
+          printf("%s", buf);
         }
      }
      break;
